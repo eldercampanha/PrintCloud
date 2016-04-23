@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">"Fast Print"</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log In</string>
+    <string name="login_screen_title">Welcome to Fast Print</string>
+    <string name="fast_print">Fast Print</string>
+    <string name="login_instructions">Enter your name and password to access the system</string>
+    <string name="main_screen_files_title">Your Files</string>
+    <string name="add_files">ADD FILES</string>
+    <string name="log_out">Log Out</string>
+    <string name="back">Back</string>
+    <string name="help_text">Instructions for using this Machine</string>
+    <string name="put_flashdisk">Please, insert your Pendrive and click on "Scan".</string>
+    <string name="scan">SCAN</string>
+</resources>
