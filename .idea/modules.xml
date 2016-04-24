@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PrintStop.iml" filepath="$PROJECT_DIR$/PrintStop.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/printcloud.iml" filepath="$PROJECT_DIR$/printcloud.iml" />
     </modules>
   </component>
 </project>
