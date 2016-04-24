@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.elder.printstop.R;
+import com.example.elder.printstop.util.DBConnection;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -28,21 +29,35 @@ public class Login extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
+//                try {
+//                    Class.forName("com.mysql.jdbc.Driver").newInstance();
+//                    Connection conn = DriverManager.getConnection("jdbc:mysql://10.0.3.2:3306/mycloudprinterteste2", "admin", "");
+//                    PreparedStatement stm =  conn.prepareStatement("INSERT INTO tabeladeprecos (descricao, valor)  VALUES ('teste2', '12')");
+//                    stm.executeUpdate();
+//                    conn.close();
+
                 try {
-                    Class.forName("com.mysql.jdbc.Driver").newInstance();
-                    Connection conn = DriverManager.getConnection("jdbc:mysql://10.0.3.2:3306/mycloudprinterteste2", "admin", "");
-                    PreparedStatement stm =  conn.prepareStatement("INSERT INTO tabeladeprecos (descricao, valor)  VALUES ('teste2', '12')");
-                    stm.executeUpdate();
-                    conn.close();
-                } catch (InstantiationException e) {
+                    DBConnection.getInstance().executeUpdate("INSERT INTO tabeladeprecos (descricao, valor)  VALUES ('teste2', '12')");
+                } catch (SQLException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
-                } catch (SQLException e) {
-                    e.printStackTrace();
                 }
+
+
+//                } catch (InstantiationException e) {
+//                    e.printStackTrace();
+//                } catch (IllegalAccessException e) {
+//                    e.printStackTrace();
+//                } catch (ClassNotFoundException e) {
+//                    e.printStackTrace();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
 
             }
         }).start();
