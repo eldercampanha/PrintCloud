@@ -37,8 +37,7 @@ public class DBConnection {
     public synchronized ResultSet executeQuery(String sql) throws SQLException {
         ResultSet rs = null;
         if (connection != null) {
-            connection.createStatement().executeQuery(sql);
-            connection.close();
+            rs= connection.createStatement().executeQuery(sql);
         }
         return rs;
     }
@@ -46,7 +45,6 @@ public class DBConnection {
     public synchronized void executeUpdate(String sql) throws SQLException {
         if (connection != null) {
             connection.createStatement().executeUpdate(sql);
-            connection.close();
         }
     }
 
