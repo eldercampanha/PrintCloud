@@ -16,6 +16,7 @@ public class LoginAsyncTask extends AsyncTask<String,Integer,Boolean> {
 
     public interface LoginInterface{
         void start();
+        void finish();
         void sucess(boolean found);
         void error(String error);
     }
@@ -45,7 +46,6 @@ public class LoginAsyncTask extends AsyncTask<String,Integer,Boolean> {
                 if (rs.next() && rs.getInt(1) > 0)
                     found = true;
             }
-            DBConnection.getInstance().closeConnection();
         } catch (SQLException e) {
             e.printStackTrace();
             mLoginInterface.error(e.getMessage());
@@ -68,5 +68,6 @@ public class LoginAsyncTask extends AsyncTask<String,Integer,Boolean> {
     protected void onPostExecute(Boolean aBoolean) {
         super.onPostExecute(aBoolean);
         mLoginInterface.sucess(aBoolean);
+        mLoginInterface.finish();
     }
 }

@@ -9,6 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".ui.Login">
 
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,6 +32,15 @@
         android:layout_marginTop="30dp"
         android:id="@+id/frameLayout">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/authentification_error"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:textColor="#ff0000"
+            android:id="@+id/txt_authentification_error"
+            android:visibility="gone"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,6 +50,8 @@
             android:layout_gravity="center"
             android:orientation="vertical"
             >
+
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -52,7 +64,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="2"
-                android:id="@+id/txt_email"/>
+                android:id="@+id/txt_email"
+                android:inputType="textEmailAddress"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -65,7 +78,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="2"
-                android:id="@+id/txt_senha"/>
+                android:id="@+id/txt_senha"
+                android:inputType="textPassword"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

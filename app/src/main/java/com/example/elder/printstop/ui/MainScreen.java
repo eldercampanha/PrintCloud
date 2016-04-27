@@ -145,4 +145,8 @@ public class MainScreen extends AppCompatActivity {
 
         return files;
     }
+
+    public void btnLogoutClicked(View view){
+        finish();
+    }
 }

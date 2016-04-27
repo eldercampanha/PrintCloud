@@ -1,28 +1,23 @@
 package com.example.elder.printstop.ui;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.elder.printstop.R;
 import com.example.elder.printstop.async.LoginAsyncTask;
 import com.example.elder.printstop.util.DBConnection;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 public class Login extends AppCompatActivity {
 
     private TextView txtEmail;
     private TextView txtSenha;
+    private TextView txtAuthentificationError;
+    private ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +27,11 @@ public class Login extends AppCompatActivity {
 
         txtEmail = (TextView)findViewById(R.id.txt_email);
         txtSenha = (TextView)findViewById(R.id.txt_senha);
+        txtAuthentificationError = (TextView)findViewById(R.id.txt_authentification_error);
+        progress = new ProgressDialog(Login.this);
+        progress.setTitle( "Loggin in..");
+        progress.setMessage("Please wait");
+        progress.setIndeterminate(true);
     }
 
     private void testarConexao() {
@@ -80,22 +80,37 @@ public class Login extends AppCompatActivity {
         String email = txtEmail.getText().toString();
         String senha = txtSenha.getText().toString();
 
+        progress.show();
+
         if(verificaCampos())
             new LoginAsyncTask(new LoginAsyncTask.LoginInterface(){
                 @Override
                 public void start() {
                     showMEsssage("Logging...");
+
+                }
+
+                @Override
+                public void finish() {
+                    progress.hide();
                 }
 
                 @Override
                 public void sucess(boolean found) {
                     if(found) {
                         showMEsssage("Success");
+                        finish();
                         Intent intent = new Intent(Login.this, MainScreen.class);
                         startActivity(intent);
-                    }else
+                        try{
+                            DBConnection.getInstance().closeConnection();
+                        } catch ( Exception ex){
+                            ex.printStackTrace();
+                        }
+                    }else {
                         showMEsssage("Fail");
-
+                        txtAuthentificationError.setVisibility(View.VISIBLE);
+                    }
 
                 }
 

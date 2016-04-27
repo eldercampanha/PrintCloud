@@ -32,6 +32,7 @@ public class DBConnection {
     public synchronized void closeConnection() throws SQLException {
         if(connection != null && !connection.isClosed())
             connection.close();
+        connection = null;
     }
 
     public synchronized ResultSet executeQuery(String sql) throws SQLException {
