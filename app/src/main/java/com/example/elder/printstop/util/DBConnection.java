@@ -11,6 +11,9 @@ import java.sql.SQLException;
 public class DBConnection {
     private static DBConnection ourInstance = new DBConnection();
     private static Connection connection;
+    //ANDROID EMULATOR
+    //private static String address = "10.0.2.2";
+    //GENYMOTION
     private static String address = "10.0.3.2";
     private static String db = "mycloudprinterteste2";
     private static String user = "admin";

@@ -106,29 +106,29 @@
                 android:orientation="horizontal">
 
 
-                <android.support.design.widget.FloatingActionButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="30dp"
-                    android:padding="10dp"
-                    android:id="@+id/print_fab"
-                    android:background="#FFF"
-                    android:elevation="8dp"
-                    android:src="@drawable/printer"/>
+                <!--<android.support.design.widget.FloatingActionButton-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_margin="30dp"-->
+                    <!--android:padding="10dp"-->
+                    <!--android:id="@+id/print_fab"-->
+                    <!--android:background="#FFF"-->
+                    <!--android:elevation="8dp"-->
+                    <!--android:src="@drawable/printer"/>-->
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:background="#FFF"
-                    android:layout_height="match_parent">
+                <!--<LinearLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:background="#FFF"-->
+                    <!--android:layout_height="match_parent">-->
 
 
-                    <ImageView
-                        android:id="@+id/img_pdf_file"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:scaleType="center"
-                        />
-                </LinearLayout>
+                    <!--<ImageView-->
+                        <!--android:id="@+id/img_pdf_file"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:scaleType="center"-->
+                        <!--/>-->
+                <!--</LinearLayout>-->
 
 
             </LinearLayout>

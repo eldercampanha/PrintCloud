@@ -80,13 +80,12 @@ public class Login extends AppCompatActivity {
         String email = txtEmail.getText().toString();
         String senha = txtSenha.getText().toString();
 
-        progress.show();
-
         if(verificaCampos())
             new LoginAsyncTask(new LoginAsyncTask.LoginInterface(){
                 @Override
                 public void start() {
                     showMEsssage("Logging...");
+                    progress.show();
 
                 }
 
@@ -99,7 +98,7 @@ public class Login extends AppCompatActivity {
                 public void sucess(boolean found) {
                     if(found) {
                         showMEsssage("Success");
-                        finish();
+                        Login.this.finish();
                         Intent intent = new Intent(Login.this, MainScreen.class);
                         startActivity(intent);
                         try{

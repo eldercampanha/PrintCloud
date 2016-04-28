@@ -63,41 +63,41 @@ public class RecyclerViewAdapterMainScreen extends RecyclerView.Adapter<Recycler
             public void onClick(View v) {
                 TextView txt = (TextView)v;
                 Log.i("SSS", txt.getText().toString());
-                render(txt.getText().toString());
+//                render(txt.getText().toString());
             }
         });
     }
 
-    private void render(String fileName) {
-
-        try {
-            ImageView mImageView = (ImageView)((Activity)mContext).findViewById(R.id.img_pdf_file);
-            int REQ_WIDTH = 1000;//mImageView.getWidth();
-            int REQ_HEIGHT = mImageView.getHeight() + 1000;
-            int currentPage = 0;
-
-
-
-            Bitmap bitmap = Bitmap.createBitmap(REQ_WIDTH, REQ_HEIGHT, Bitmap.Config.ARGB_4444);
-
-            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-            File file = new File(path + "/"+ fileName);
-            PdfRenderer pdfRenderer = new PdfRenderer(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY));
-
-            Matrix m = mImageView.getMatrix();
-            Rect rec = new Rect(0,0,bitmap.getWidth(),bitmap.getHeight());
-            pdfRenderer.openPage(currentPage).render(bitmap,rec, m, PdfRenderer.Page.RENDER_MODE_FOR_PRINT);
-            mImageView.setImageMatrix(m);
-            mImageView.setImageBitmap(bitmap);
-            mImageView.invalidate();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
+//    private void render(String fileName) {
+//
+//        try {
+//            ImageView mImageView = (ImageView)((Activity)mContext).findViewById(R.id.img_pdf_file);
+//            int REQ_WIDTH = 1000;//mImageView.getWidth();
+//            int REQ_HEIGHT = mImageView.getHeight() + 1000;
+//            int currentPage = 0;
+//
+//
+//
+//            Bitmap bitmap = Bitmap.createBitmap(REQ_WIDTH, REQ_HEIGHT, Bitmap.Config.ARGB_4444);
+//
+//            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+//            File file = new File(path + "/"+ fileName);
+//            PdfRenderer pdfRenderer = new PdfRenderer(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY));
+//
+//            Matrix m = mImageView.getMatrix();
+//            Rect rec = new Rect(0,0,bitmap.getWidth(),bitmap.getHeight());
+//            pdfRenderer.openPage(currentPage).render(bitmap,rec, m, PdfRenderer.Page.RENDER_MODE_FOR_PRINT);
+//            mImageView.setImageMatrix(m);
+//            mImageView.setImageBitmap(bitmap);
+//            mImageView.invalidate();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+//
 
     @Override
     public int getItemCount() {
