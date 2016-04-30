@@ -16,12 +16,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.elder.printstop.R;
 import com.example.elder.printstop.model.FileToPrint;
+import com.example.elder.printstop.ui.MainScreen;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,17 +34,18 @@ import java.util.List;
 /**
  * Created by Elder on 3/5/2016.
  */
-public class RecyclerViewAdapterMainScreen extends RecyclerView.Adapter<RecyclerViewAdapterMainScreen.Holder>{
+public class RecyclerViewAdapterMainScreen extends RecyclerView.Adapter<RecyclerViewAdapterMainScreen.Holder> {
 
     private final Context mContext;
     private final ArrayList<FileToPrint> mFiles;
     private View mView;
+    private WebView webView;
 
     public RecyclerViewAdapterMainScreen(Context context, ArrayList<FileToPrint> files) {
         mContext = context;
         mFiles = files;
+        webView = (WebView) ((Activity) mContext).findViewById(R.id.my_webview);
     }
-
 
 
     @Override
@@ -57,28 +60,29 @@ public class RecyclerViewAdapterMainScreen extends RecyclerView.Adapter<Recycler
     @Override
     public void onBindViewHolder(RecyclerViewAdapterMainScreen.Holder holder, int position) {
 
-        FileToPrint fileToPrint = mFiles.get(position);
 
-        holder.fileName.setText(fileToPrint.getName());
-        holder.fileInfo.setText("Size: " + fileToPrint.getFileSize());
+        final FileToPrint fileToPrint = mFiles.get(position);
 
-        holder.fileName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TextView txt = (TextView)v;
-                Log.i("SSS", txt.getText().toString());
-                render(txt.getText().toString());
-//                showPdf(txt.getText().toString());
-            }
-        });
+        if (fileToPrint != null) {
+            holder.fileName.setText(fileToPrint.getName());
+            holder.fileInfo.setText("Size: " + fileToPrint.getFileSize());
+
+            holder.fileName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TextView txt = (TextView) v;
+                    MainScreen.selectedPDF = fileToPrint;
+//                    webView.loadUrl(fileToPrint.getFileLocation());
+                    webView.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url="+ "http://2012books.lardbucket.org/pdfs/music-theory.pdf");
+                }
+            });
+        }
     }
-
-
     private void showPdf(String name) {
 
 //        File file = new File(Environment.getExternalStorageDirectory()+"/Mypdf/Read.pdf");
         String filepath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-        File file = new File(filepath + "/"+ name);
+        File file = new File(filepath + "/" + name);
 
         PackageManager packageManager = mContext.getPackageManager();
         Intent testIntent = new Intent(Intent.ACTION_VIEW);
@@ -95,22 +99,21 @@ public class RecyclerViewAdapterMainScreen extends RecyclerView.Adapter<Recycler
     private void render(String fileName) {
 
         try {
-            ImageView mImageView = (ImageView)((Activity)mContext).findViewById(R.id.img_pdf_file);
+            ImageView mImageView = (ImageView) ((Activity) mContext).findViewById(R.id.img_pdf_file);
             int REQ_WIDTH = 1000;//mImageView.getWidth();
             int REQ_HEIGHT = mImageView.getHeight() + 1000;
             int currentPage = 0;
 
 
-
             Bitmap bitmap = Bitmap.createBitmap(REQ_WIDTH, REQ_HEIGHT, Bitmap.Config.ARGB_4444);
 
             String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-            File file = new File(path + "/"+ fileName);
+            File file = new File(path + "/" + fileName);
             PdfRenderer pdfRenderer = new PdfRenderer(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY));
 
             Matrix m = mImageView.getMatrix();
-            Rect rec = new Rect(0,0,bitmap.getWidth(),bitmap.getHeight());
-            pdfRenderer.openPage(currentPage).render(bitmap,rec, m, PdfRenderer.Page.RENDER_MODE_FOR_PRINT);
+            Rect rec = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            pdfRenderer.openPage(currentPage).render(bitmap, rec, m, PdfRenderer.Page.RENDER_MODE_FOR_PRINT);
             mImageView.setImageMatrix(m);
             mImageView.setImageBitmap(bitmap);
             mImageView.invalidate();
@@ -136,8 +139,8 @@ public class RecyclerViewAdapterMainScreen extends RecyclerView.Adapter<Recycler
         public Holder(View itemView) {
             super(itemView);
 
-            fileName = (TextView)itemView.findViewById(R.id.txt_file_name);
-            fileInfo = (TextView)itemView.findViewById(R.id.txt_file_info);
+            fileName = (TextView) itemView.findViewById(R.id.txt_file_name);
+            fileInfo = (TextView) itemView.findViewById(R.id.txt_file_info);
         }
     }
 }

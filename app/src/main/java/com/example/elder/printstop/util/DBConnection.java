@@ -14,8 +14,13 @@ public class DBConnection {
     //ANDROID EMULATOR
     //private static String address = "10.0.2.2";
     //GENYMOTION
-//    private static String address = "10.0.3.2";
-    private static String address = "192.168.56.1";
+    //private static String address = "10.0.3.2";
+    //HOME
+    //private static String address = "192.168.56.1";
+    //MONITORA
+    //private static String address = "172.16.2.1";
+    //UFSCAR
+    private static String address = "10.0.0.107";
     private static String db = "mycloudprinterteste2";
     private static String user = "admin";
     private static String password = "";
