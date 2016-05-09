@@ -11,7 +11,6 @@ public class Pessoa {
     private String email;
     private String senha;
     public static Pessoa eviencia = new Pessoa();
-    private ArrayList<Arquivos> files = new ArrayList<>();
 
 
     public Pessoa() {
@@ -75,11 +74,4 @@ public class Pessoa {
     }
 
 
-    public ArrayList<Arquivos> getFiles() {
-        return files;
-    }
-
-    public void setFiles(ArrayList<Arquivos> files) {
-        this.files = files;
-    }
 }

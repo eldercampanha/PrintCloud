@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.elder.printstop.R;
+import com.example.elder.printstop.model.Arquivos;
 import com.example.elder.printstop.model.FileToPrint;
 import com.example.elder.printstop.ui.MainScreen;
 
@@ -37,14 +38,20 @@ import java.util.List;
 public class RecyclerViewAdapterMainScreen extends RecyclerView.Adapter<RecyclerViewAdapterMainScreen.Holder> {
 
     private final Context mContext;
-    private final ArrayList<FileToPrint> mFiles;
+    private final ArrayList<Arquivos> mFiles;
     private View mView;
     private WebView webView;
+    private RecyclerViewAdapterMainScreenInterface _interface;
 
-    public RecyclerViewAdapterMainScreen(Context context, ArrayList<FileToPrint> files) {
+    public interface RecyclerViewAdapterMainScreenInterface{
+        void fileCliked(int file);
+    }
+
+    public RecyclerViewAdapterMainScreen(Context context, ArrayList<Arquivos> files, RecyclerViewAdapterMainScreenInterface recyclerViewAdapterMainScreenInterface) {
         mContext = context;
         mFiles = files;
         webView = (WebView) ((Activity) mContext).findViewById(R.id.my_webview);
+        this._interface = recyclerViewAdapterMainScreenInterface;
     }
 
 
@@ -58,22 +65,23 @@ public class RecyclerViewAdapterMainScreen extends RecyclerView.Adapter<Recycler
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewAdapterMainScreen.Holder holder, int position) {
+    public void onBindViewHolder(RecyclerViewAdapterMainScreen.Holder holder, final int position) {
 
 
-        final FileToPrint fileToPrint = mFiles.get(position);
+        final Arquivos fileToPrint = mFiles.get(position);
 
         if (fileToPrint != null) {
-            holder.fileName.setText(fileToPrint.getName());
-            holder.fileInfo.setText("Size: " + fileToPrint.getFileSize());
+            holder.fileName.setText(fileToPrint.getNome());
+            holder.fileInfo.setText("Size: " + fileToPrint.getTamanho());
 
             holder.fileName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     TextView txt = (TextView) v;
-                    MainScreen.selectedPDF = fileToPrint;
+                    _interface.fileCliked(position);
 //                    webView.loadUrl(fileToPrint.getFileLocation());
-                    webView.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url="+ "http://2012books.lardbucket.org/pdfs/music-theory.pdf");
+//                    webView.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url="+ "http://2012books.lardbucket.org/pdfs/music-theory.pdf");
+
                 }
             });
         }

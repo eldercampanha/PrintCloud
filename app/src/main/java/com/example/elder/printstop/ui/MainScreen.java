@@ -10,72 +10,117 @@ import android.os.Environment;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintJob;
+import android.print.PrintJobInfo;
 import android.print.PrintManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.elder.printstop.AddMoreFiles;
 import com.example.elder.printstop.R;
+import com.example.elder.printstop.adapter.PrintJobAdapter;
 import com.example.elder.printstop.adapter.RecyclerViewAdapterMainScreen;
+import com.example.elder.printstop.model.Cliente;
 import com.example.elder.printstop.model.FileToPrint;
 import com.example.elder.printstop.model.Pessoa;
+import com.example.elder.printstop.singleton.ClienteEmEvidencia;
 import com.example.elder.printstop.util.MyWebViewClient;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class MainScreen extends AppCompatActivity {
+
+    private TextView txtName;
+    private TextView txtSaldo;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerViewAdapterMainScreen mRecyclerViewAdapterMainScreen;
     private ProgressDialog progress;
     private WebView webview;
-    private String printCloudInfoUrl = "https://lh4.ggpht.com/IOAolyiGssaiu7zU7RDqoamzRzsugMaCGCDj8RteqmU3MCvp1Bel_rZVCWc0uxY3lRsP=w300";
+    private String printCloudInfoUrl = "https://lh4.ggpht.com/oZmXJ4CkYKdQonquHQekyI-5IpOo3D9ZVUX0pMvMWddX2PmhPAx_STgzZcw5Pa7Hcw=w300";
     public static FileToPrint selectedPDF;
+    private Cliente _cliente;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
 
-        setWebView();
-        setRecyclerView();
-        loadWebView(printCloudInfoUrl);
-    }
-
-    public void setRecyclerView(){
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerViewAdapterMainScreen = new RecyclerViewAdapterMainScreen(this,getPdfFilesOnDevice());
-        mRecyclerView.setAdapter(mRecyclerViewAdapterMainScreen);
-        mRecyclerView = (RecyclerView)findViewById(R.id.recycler_view_main_files_list);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-    }
-
-    public void setWebView(){
+        txtName = (TextView)findViewById(R.id.txt_user_name);
+        txtSaldo = (TextView)findViewById(R.id.txt_user_saldo);
         progress = new ProgressDialog(this);
         progress.setTitle( "Loading Page..");
         progress.setMessage("Please wait");
         progress.setIndeterminate(true);
+
+        _cliente = ClienteEmEvidencia.getInstance().getCliente();
+        updateScreen();
+        setWebView();
+        setRecyclerView();
+        setUserDataOnScreen();
+//        loadWebView(printCloudInfoUrl);
+    }
+
+    private void updateScreen() {
+        txtName.setText(ClienteEmEvidencia.getInstance().getCliente().getNome());
+        txtSaldo.setText("R$ "+ ClienteEmEvidencia.getInstance().getCliente().getSaldo());
+    }
+
+    private void setUserDataOnScreen() {
+    }
+
+    public void setRecyclerView(){
+
+
+        mRecyclerView = (RecyclerView)findViewById(R.id.recycler_view_main_files_list);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerViewAdapterMainScreen = new RecyclerViewAdapterMainScreen(this,
+                ClienteEmEvidencia.getInstance().getCliente().getFiles(),
+                new RecyclerViewAdapterMainScreen.RecyclerViewAdapterMainScreenInterface() {
+                    @Override
+                    public void fileCliked(int file) {
+                        loadWebView(ClienteEmEvidencia.getInstance().getCliente().getFiles().get(file).getCaminho());
+                    }
+                });
+        mRecyclerView.setAdapter(mRecyclerViewAdapterMainScreen);
+
+    }
+
+    public void setWebView(){
+
+
         webview = (WebView)findViewById(R.id.my_webview);
         webview.getSettings().setJavaScriptEnabled(true);
         webview.getSettings().setLoadWithOverviewMode(true);
         webview.getSettings().setUseWideViewPort(true);
         webview.setWebViewClient(new MyWebViewClient(this,new MyWebViewClient.WebClienteInterface() {
             @Override
-            public void start() { progress.show();}
+            public void start() {
+                progress.show();
+            }
             @Override
             public void finish() { progress.dismiss();}
         }));
 
     }
     public void loadWebView(String url){
-        webview.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=" + url);
+        try {
+            webview.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=" + url);
+        } catch (Exception ex){
+            Log.i("SSS", ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
 
@@ -136,12 +181,14 @@ public class MainScreen extends AppCompatActivity {
 
             // Get a print adapter instance
             PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter();
+//            PrintDocumentAdapter printAdapter = new PrintJobAdapter(this);
 
             // Create a print job with name and adapter instance
             String jobName = getString(R.string.app_name) + " Document";
             PrintJob printJob = printManager.print(jobName, printAdapter,
                     new PrintAttributes.Builder().build());
 
+            PrintJobInfo info =  printJob.getInfo();
             // Save the job object for later status checking
          //   mPrintJobs.add(printJob);
     }

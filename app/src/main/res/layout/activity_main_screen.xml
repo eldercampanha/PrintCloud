@@ -24,6 +24,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
+                android:minWidth="50dp"
                 android:scaleType="fitStart"
                 android:src="@drawable/question_mark"
                 android:background="@null"
@@ -48,6 +49,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="4">
 
+
                 <ImageButton
                     android:layout_width="50dp"
                     android:layout_height="50dp"
@@ -55,6 +57,19 @@
                     android:scaleType="fitCenter"
                     android:onClick="btnPrinterClicked"
                     android:src="@drawable/printer"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="User Name"
+                    android:id="@+id/txt_user_name"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:textColor="#FFF"
+
+                    />
 
 
             </LinearLayout>
@@ -82,6 +97,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2"
                     android:text="R$ 0,00"
+                    android:id="@+id/txt_user_saldo"
                     android:textSize="15dp"
                     android:textStyle="bold"
                     android:textColor="#FFF"
