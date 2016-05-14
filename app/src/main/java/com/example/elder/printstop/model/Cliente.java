@@ -1,8 +1,12 @@
 package com.example.elder.printstop.model;
 
+import java.util.ArrayList;
+
 public class Cliente extends Pessoa{
     private float saldo;
     private String fotoPerfil;
+    private ArrayList<Arquivos> files = new ArrayList<>();
+
 
     public Cliente() {
     }
@@ -11,6 +15,7 @@ public class Cliente extends Pessoa{
         super(id, cpf, nome, telefone, email, senha);
         this.saldo = saldo;
         this.fotoPerfil = fotoPerfil;
+        files = new ArrayList<>();
     }
 
     public float getSaldo() {
@@ -28,7 +33,13 @@ public class Cliente extends Pessoa{
     public void setFotoperfil(String fotoperfil) {
         this.fotoPerfil = fotoperfil;
     }
-    
-    
+
+    public ArrayList<Arquivos> getFiles() {
+        return files;
+    }
+
+    public void setFiles(ArrayList<Arquivos> files) {
+        this.files = files;
+    }
     
 }

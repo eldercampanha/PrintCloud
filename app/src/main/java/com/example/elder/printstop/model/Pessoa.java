@@ -1,5 +1,7 @@
 package com.example.elder.printstop.model;
 
+import java.util.ArrayList;
+
 public class Pessoa {
     
     private int id;
@@ -8,6 +10,8 @@ public class Pessoa {
     private String telefone;
     private String email;
     private String senha;
+    public static Pessoa eviencia = new Pessoa();
+
 
     public Pessoa() {
     }
@@ -68,7 +72,6 @@ public class Pessoa {
     public void setSenha(String senha) {
         this.senha = senha;
     }
-    
-    
-    
+
+
 }

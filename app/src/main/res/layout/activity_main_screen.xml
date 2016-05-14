@@ -24,6 +24,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
+                android:minWidth="50dp"
                 android:scaleType="fitStart"
                 android:src="@drawable/question_mark"
                 android:background="@null"
@@ -33,11 +34,11 @@
                 android:layout_marginLeft="0dp" />
 
             <Button
-                android:layout_width="20dp"
+                android:layout_width="15dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:text="@string/log_out"
-                android:textSize="18sp"
+                android:textSize="15dp"
                 android:textColor="#FFF"
                 android:background="@null"
                 android:layout_gravity="center_vertical"
@@ -47,6 +48,29 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="4">
+
+
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:scaleType="fitCenter"
+                    android:onClick="btnPrinterClicked"
+                    android:src="@drawable/printer"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="User Name"
+                    android:id="@+id/txt_user_name"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:textColor="#FFF"
+
+                    />
+
 
             </LinearLayout>
 
@@ -73,7 +97,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2"
                     android:text="R$ 0,00"
-                    android:textSize="26sp"
+                    android:id="@+id/txt_user_saldo"
+                    android:textSize="15dp"
                     android:textStyle="bold"
                     android:textColor="#FFF"
                     android:gravity="center"/>
@@ -105,16 +130,14 @@
                 android:layout_weight="5"
                 android:orientation="horizontal">
 
+                <WebView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/my_webview">
 
-                <android.support.design.widget.FloatingActionButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="30dp"
-                    android:padding="10dp"
-                    android:id="@+id/print_fab"
-                    android:background="#FFF"
-                    android:elevation="8dp"
-                    android:src="@drawable/printer"/>
+
+                </WebView>
+
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -170,7 +193,7 @@
                         android:layout_height="match_parent"
                         android:background="@color/colorPrimary"
                         android:textColor="#FFF"
-                        android:textSize="20sp"
+                        android:textSize="20dp"
                         android:textStyle="bold"
                         android:onClick="btnAddMoreFilesClicked"
                         android:text="@string/add_files"/>
