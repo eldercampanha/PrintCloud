@@ -1,5 +1,4 @@
 package com.example.elder.printstop.util;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -16,13 +15,15 @@ public class DBConnection {
     //GENYMOTION
     //private static String address = "10.0.3.2";
     //HOME
-    private static String address = "192.168.56.2";
+    //private static String address = "10.0.0.104";
     //MONITORA
-    //private static String address = "172.16.2.1";
+    //private static String address = "172.16.1.139";
     //UFSCAR
     //private static String address = "186.219.94.49";
-    private static String db = "mycloudprinterteste2";
-    private static String user = "admin";
+    //Rodolfo
+    private static String address = "192.168.1.131";
+    private static String db = "mycloudprinter";
+    private static String user = "root";
     private static String password = "";
 
     public static DBConnection getInstance() throws ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
