@@ -61,6 +61,7 @@ public class MainScreen extends AppCompatActivity {
         progress.setTitle( "Loading Page..");
         progress.setMessage("Please wait");
         progress.setIndeterminate(true);
+        progress.setCancelable(false);
 
         _cliente = ClienteEmEvidencia.getInstance().getCliente();
         updateScreen();
@@ -90,7 +91,7 @@ public class MainScreen extends AppCompatActivity {
                 new RecyclerViewAdapterMainScreen.RecyclerViewAdapterMainScreenInterface() {
                     @Override
                     public void fileCliked(int file) {
-                        loadWebView(ClienteEmEvidencia.getInstance().getCliente().getFiles().get(file).getCaminho());
+                        loadWebView(ClienteEmEvidencia.getInstance().getCliente().getFiles().get(file).getNome(), ClienteEmEvidencia.getInstance().getCliente().getCpf());
                     }
                 });
         mRecyclerView.setAdapter(mRecyclerViewAdapterMainScreen);
@@ -114,9 +115,12 @@ public class MainScreen extends AppCompatActivity {
         }));
 
     }
-    public void loadWebView(String url){
+    public void loadWebView(String name, String cpf){
         try {
-            webview.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=" + url);
+//            String url = "http://drive.google.com/viewerng/viewer?embedded=true&url=http://mycloudprinter.com.br/Files_Clientes/"+cpf+"/"+ name;
+            String url = "http://drive.google.com/viewerng/viewer?embedded=true&url=http://mycloudprinter.com.br/adm/"+ name;
+            Log.i("SSS", url);
+            webview.loadUrl(url);
         } catch (Exception ex){
             Log.i("SSS", ex.getMessage());
             ex.printStackTrace();

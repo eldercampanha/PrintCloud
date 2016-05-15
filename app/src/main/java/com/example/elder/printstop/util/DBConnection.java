@@ -21,10 +21,16 @@ public class DBConnection {
     //UFSCAR
     //private static String address = "186.219.94.49";
     //Rodolfo
-    private static String address = "192.168.1.131";
+
+    private static String address = "mycloudprinter.mysql.dbaas.com.br";
     private static String db = "mycloudprinter";
-    private static String user = "root";
-    private static String password = "";
+    private static String user = "mycloudprinter";
+    private static String password = "mycloud123";
+
+//    private static String address = "mycloudprinter.mysql.dbaas.com.br";
+//    private static String db = "mycloudprinter";
+//    private static String user = "mycloudprinter";
+//    private static String password = "mycloud123";
 
     public static DBConnection getInstance() throws ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
 
@@ -46,9 +52,13 @@ public class DBConnection {
         return connection;
     }
 
-    public synchronized void closeConnection() throws SQLException {
-        if(connection != null && !connection.isClosed())
-            connection.close();
+    public static synchronized void closeConnection(){
+        try {
+            if(connection != null && !connection.isClosed())
+                connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         connection = null;
     }
 
