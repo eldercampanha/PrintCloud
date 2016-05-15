@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
+import android.print.PageRange;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintJob;
@@ -20,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,10 +31,12 @@ import com.example.elder.printstop.AddMoreFiles;
 import com.example.elder.printstop.R;
 import com.example.elder.printstop.adapter.PrintJobAdapter;
 import com.example.elder.printstop.adapter.RecyclerViewAdapterMainScreen;
+import com.example.elder.printstop.async.DownloadPdfAsyncTask;
 import com.example.elder.printstop.model.Cliente;
 import com.example.elder.printstop.model.FileToPrint;
 import com.example.elder.printstop.model.Pessoa;
 import com.example.elder.printstop.singleton.ClienteEmEvidencia;
+import com.example.elder.printstop.util.Downloader;
 import com.example.elder.printstop.util.MyWebViewClient;
 
 import java.util.ArrayList;
@@ -105,6 +111,15 @@ public class MainScreen extends AppCompatActivity {
         webview.getSettings().setJavaScriptEnabled(true);
         webview.getSettings().setLoadWithOverviewMode(true);
         webview.getSettings().setUseWideViewPort(true);
+        webview.enableSlowWholeDocumentDraw();
+
+//        // Important: Only after the page is loaded we will do the print.
+//        webview.setWebViewClient(new WebViewClient() {
+//            @Override
+//            public void onPageFinished(WebView view, String url) {
+//                doPrint(webview);
+//            }
+//        });
         webview.setWebViewClient(new MyWebViewClient(this,new MyWebViewClient.WebClienteInterface() {
             @Override
             public void start() {
@@ -127,21 +142,6 @@ public class MainScreen extends AppCompatActivity {
         }
     }
 
-
-    public ArrayList<FileToPrint> getFilesForUser(Pessoa pessoa){
-
-        //RETORNAR ARQUIVOS DA PESSOA NO BANCO
-
-        ArrayList<FileToPrint> fakeDeleteDepois = new ArrayList<>();
-
-        FileToPrint f1 = new FileToPrint();
-        f1.setName("File 1");
-        f1.setFileSize(200);
-        f1.setFileLocation("https://www.novatec.com.br/livros/objective-c/capitulo9788575222911.pdf");
-
-        fakeDeleteDepois.add(f1);
-        return fakeDeleteDepois;
-    }
 
     public void btnHelpClicked(View view){
         Intent intent = new Intent(this, Help.class);
@@ -173,8 +173,31 @@ public class MainScreen extends AppCompatActivity {
     }
 
     public void btnPrinterClicked(View view){
-        createWebPrintJob(webview);
+ //       createWebPrintJob(webview);
+        methodPrintTest(webview);
+    }
 
+    public void methodPrintTest(WebView webView){
+
+        new DownloadPdfAsyncTask().execute("http://maven.apache.org/maven-1.x/maven.pdf",Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS +"teste.pdf"));
+//      doPrint(webView);
+//    webView.createPrintDocumentAdapter("teste");
+
+
+
+//        PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+//        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter();
+//        String jobName = getString(R.string.app_name) + " Report ";
+//
+//        PrintAttributes printAttrs = new PrintAttributes.Builder().
+//                setColorMode(PrintAttributes.COLOR_MODE_MONOCHROME).
+//                setMediaSize(PrintAttributes.MediaSize.NA_LETTER.asLandscape()).
+//                setMinMargins(PrintAttributes.Margins.NO_MARGINS).
+//                build();
+//        PrintJob printJob = printManager.print(jobName, printAdapter,
+//                printAttrs);
+//        //Downloader.DownloadFile(webView.getUrl(), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS +"teste.pdf"));
+//        new DownloadPdfAsyncTask().execute("http://mycloudprinter.com.br/adm/Maven.pdf", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS+"teste.pdf"));
     }
 
     private void createWebPrintJob(WebView webView) {
@@ -201,5 +224,44 @@ public class MainScreen extends AppCompatActivity {
     public void btnLogoutClicked(View view){
         Intent intent = new Intent(this, Login.class);
         startActivity(intent);
+    }
+
+
+
+    private void doPrint(final WebView mWebView) {
+        // Get the print manager.
+        PrintManager printManager = (PrintManager) getSystemService(
+                Context.PRINT_SERVICE);
+        // Create a wrapper PrintDocumentAdapter to clean up when done.
+        PrintDocumentAdapter adapter = new PrintDocumentAdapter() {
+            private final PrintDocumentAdapter mWrappedInstance =
+                    mWebView.createPrintDocumentAdapter();
+            @Override
+            public void onStart() {
+                mWrappedInstance.onStart();
+            }
+            @Override
+            public void onLayout(PrintAttributes oldAttributes, PrintAttributes newAttributes,
+                                 CancellationSignal cancellationSignal, LayoutResultCallback callback,
+                                 Bundle extras) {
+                mWrappedInstance.onLayout(oldAttributes, newAttributes, cancellationSignal,
+                        callback, extras);
+            }
+            @Override
+            public void onWrite(PageRange[] pages, ParcelFileDescriptor destination,
+                                CancellationSignal cancellationSignal, WriteResultCallback callback) {
+                mWrappedInstance.onWrite(pages, destination, cancellationSignal, callback);
+            }
+            @Override
+            public void onFinish() {
+                mWrappedInstance.onFinish();
+                // Intercept the finish call to know when printing is done
+                // and destroy the WebView as it is expensive to keep around.
+                mWebView.destroy();
+                //mWebView = null;
+            }
+        };
+        // Pass in the ViewView's document adapter.
+        printManager.print("MotoGP stats", adapter, null);
     }
 }
