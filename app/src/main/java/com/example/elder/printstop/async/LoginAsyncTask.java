@@ -61,6 +61,7 @@ public class LoginAsyncTask extends AsyncTask<String,Integer,Boolean> {
         } catch (NullPointerException e){
             //mLoginInterface.error(e.getMessage());
         }
+        DBConnection.closeConnection();
         return found;
     }
 

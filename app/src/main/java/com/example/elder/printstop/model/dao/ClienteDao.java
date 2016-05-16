@@ -55,4 +55,49 @@ public class ClienteDao {
 
         return cliente;
     }
+
+    public int updateSaldoCliente(int id, float novoSaldo) {
+
+        String sql= "UPDATE cliente SET saldo = "+ novoSaldo +" WHERE fk_idpessoa_pessoa_cliente = "+id+"";
+        DBConnection.closeConnection();
+        try {
+            int result = DBConnection.getInstance().executeUpdate(sql);
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int updateCliente(Cliente cliente) {
+
+        String sql = "UPDATE pessoa, cliente SET" +
+                " cpf = '" + cliente.getCpf() +"' " +
+                ", nome = '" + cliente.getNome() + "' " +
+                ", telefone = '" + cliente.getTelefone() + "' " +
+                ", email = '" + cliente.getEmail() + "' " +
+                " WHERE idpessoa = " + cliente.getId();
+        DBConnection.closeConnection();
+
+        try {
+            int result = DBConnection.getInstance().executeUpdate(sql);
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
 }

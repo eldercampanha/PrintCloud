@@ -14,4 +14,9 @@
     <string name="put_flashdisk">Please, insert your Pendrive and click on "Scan".</string>
     <string name="scan">SCAN</string>
     <string name="authentification_error">(*)The user name or password is incorrect</string>
+    <string name="email">Email:</string>
+    <string name="nome">Nome:</string>
+    <string name="telefone">Telefone:</string>
+    <string name="cancelar">CANCELAR</string>
+    <string name="salvar">SALVAR</string>
 </resources>

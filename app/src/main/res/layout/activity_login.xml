@@ -64,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="2"
-                android:id="@+id/txt_email"
+                android:id="@+id/lbl_email"
                 android:text="teste@gmail.com"
                 android:inputType="textEmailAddress"/>
 

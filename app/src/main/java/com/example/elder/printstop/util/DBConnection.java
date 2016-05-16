@@ -70,10 +70,11 @@ public class DBConnection {
         return rs;
     }
 
-    public synchronized void executeUpdate(String sql) throws SQLException {
+    public synchronized int executeUpdate(String sql) throws SQLException {
         if (connection != null) {
-            connection.createStatement().executeUpdate(sql);
+            return connection.createStatement().executeUpdate(sql);
         }
+        return 0;
     }
 
     private DBConnection() {

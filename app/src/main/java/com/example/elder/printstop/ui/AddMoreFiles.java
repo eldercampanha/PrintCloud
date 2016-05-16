@@ -1,8 +1,10 @@
-package com.example.elder.printstop;
+package com.example.elder.printstop.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+
+import com.example.elder.printstop.R;
 
 public class AddMoreFiles extends AppCompatActivity {
 

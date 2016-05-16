@@ -35,7 +35,7 @@ public class GetArquivosAsyncTask extends AsyncTask <Integer, Integer, ArrayList
         ArrayList<Arquivos> listaArquivos = arquivosDao.getFilesByClienteId(id);
 
         if(listaArquivos != null)mInterface.success(listaArquivos);
-
+        DBConnection.closeConnection();
         return null;
     }
 

@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.example.elder.printstop.R;
@@ -28,7 +26,7 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         testarConexao();
 
-        txtEmail = (TextView)findViewById(R.id.txt_email);
+        txtEmail = (TextView)findViewById(R.id.lbl_email);
         txtSenha = (TextView)findViewById(R.id.txt_senha);
         txtAuthentificationError = (TextView)findViewById(R.id.txt_authentification_error);
 
