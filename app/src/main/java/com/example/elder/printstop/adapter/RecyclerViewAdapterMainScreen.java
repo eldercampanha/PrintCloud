@@ -54,7 +54,6 @@ public class RecyclerViewAdapterMainScreen extends RecyclerView.Adapter<Recycler
         this._interface = recyclerViewAdapterMainScreenInterface;
     }
 
-
     @Override
     public RecyclerViewAdapterMainScreen.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -86,6 +85,7 @@ public class RecyclerViewAdapterMainScreen extends RecyclerView.Adapter<Recycler
             });
         }
     }
+
     private void showPdf(String name) {
 
 //        File file = new File(Environment.getExternalStorageDirectory()+"/Mypdf/Read.pdf");
@@ -102,8 +102,6 @@ public class RecyclerViewAdapterMainScreen extends RecyclerView.Adapter<Recycler
         intent.setDataAndType(uri, "application/pdf");
         mContext.startActivity(intent);
     }
-
-
     private void render(String fileName) {
 
         try {

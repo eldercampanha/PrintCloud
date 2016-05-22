@@ -1,8 +1,12 @@
 package com.example.elder.printstop.ui;
 
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.Environment;
@@ -10,6 +14,7 @@ import android.os.ParcelFileDescriptor;
 import android.print.PageRange;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
+import android.print.PrintDocumentInfo;
 import android.print.PrintJob;
 import android.print.PrintJobInfo;
 import android.print.PrintManager;
@@ -22,14 +27,27 @@ import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.example.elder.printstop.R;
+import com.example.elder.printstop.adapter.PrintJobAdapter;
 import com.example.elder.printstop.adapter.RecyclerViewAdapterMainScreen;
 import com.example.elder.printstop.async.DownloadPdfAsyncTask;
 import com.example.elder.printstop.async.UpdateSaldoClienteAsyncTask;
 import com.example.elder.printstop.model.Cliente;
 import com.example.elder.printstop.model.FileToPrint;
 import com.example.elder.printstop.singleton.ClienteEmEvidencia;
+import com.example.elder.printstop.util.DownloaderRequest;
 import com.example.elder.printstop.util.MyWebViewClient;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class MainScreen extends AppCompatActivity {
@@ -46,6 +64,17 @@ public class MainScreen extends AppCompatActivity {
     public static FileToPrint selectedPDF;
     private Cliente _cliente;
     private int selectedFileIndex;
+    private PrintJob pj;
+    private BroadcastReceiver receiver;
+    private PrintManager printManager;
+
+
+    @Override
+    protected void onStop()
+    {
+        unregisterReceiver(receiver);
+        super.onStop();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +89,42 @@ public class MainScreen extends AppCompatActivity {
         progress.setIndeterminate(true);
         progress.setCancelable(false);
 
+        printManager = (PrintManager) MainScreen.this.getSystemService(Context.PRINT_SERVICE);
         _cliente = ClienteEmEvidencia.getInstance().getCliente();
         updateScreen();
         setWebView();
         setRecyclerView();
         setUserDataOnScreen();
 //        loadWebView(printCloudInfoUrl);
+
+        final String state = Environment.getExternalStorageState();
+
+        getAllFilesOfDir(Environment.getExternalStoragePublicDirectory(Environment.MEDIA_MOUNTED));
+//        if ( Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state) ) {  // we can read the External Storage...
+//            getAllFilesOfDir(getFilesDir().getAbsoluteFile());
+//        }
+    }
+
+    private void getAllFilesOfDir(File directory) {
+        Log.i("SSS", "Directory: " + directory.getAbsolutePath() + "\n");
+
+        final File[] files = directory.listFiles();
+
+        if ( files != null ) {
+            for ( File file : files ) {
+                if ( file != null ) {
+                    if ( file.isDirectory() ) {  // it is a folder...
+                        for(String s : file.list()){
+                            Log.i("SSS", "File in the folder: " + s + "\n");
+                        }
+                        getAllFilesOfDir(file);
+                    }
+                    else {  // it is a file...
+                        Log.i("SSS", "File: " + file.getAbsolutePath() + "\n");
+                    }
+                }
+            }
+        }
     }
 
     private void updateScreen() {
@@ -103,15 +162,6 @@ public class MainScreen extends AppCompatActivity {
         webview.getSettings().setJavaScriptEnabled(true);
         webview.getSettings().setLoadWithOverviewMode(true);
         webview.getSettings().setUseWideViewPort(true);
-        webview.enableSlowWholeDocumentDraw();
-
-//        // Important: Only after the page is loaded we will do the print.
-//        webview.setWebViewClient(new WebViewClient() {
-//            @Override
-//            public void onPageFinished(WebView view, String url) {
-//                doPrint(webview);
-//            }
-//        });
         webview.setWebViewClient(new MyWebViewClient(this,new MyWebViewClient.WebClienteInterface() {
             @Override
             public void start() {
@@ -124,7 +174,7 @@ public class MainScreen extends AppCompatActivity {
     }
     public void loadWebView(String name, String cpf){
         try {
-//            String url = "http://drive.google.com/viewerng/viewer?embedded=true&url=http://mycloudprinter.com.br/Files_Clientes/"+cpf+"/"+ name;
+//            String url = "http://drive.google.com/viewerng/viewer?embedded=true&url=http://mycloudprinter.com.br/adm/"+ name;
             String url = "http://drive.google.com/viewerng/viewer?embedded=true&url=http://mycloudprinter.com.br/adm/"+ name;
             Log.i("SSS", url);
             webview.loadUrl(url);
@@ -171,11 +221,14 @@ public class MainScreen extends AppCompatActivity {
             float novoSaldo = ClienteEmEvidencia.getInstance().getCliente().getSaldo();
             novoSaldo -= ClienteEmEvidencia.getInstance().getCliente().getFiles().get(selectedFileIndex).getValor();
 
-            if(createWebPrintJob(webview)) {
-                ClienteEmEvidencia.getInstance().getCliente().setSaldo(novoSaldo);
-                updateSaldoCliente(novoSaldo);
-                txtSaldo.setText("R$ " + novoSaldo);
-            }
+            String nome = ClienteEmEvidencia.getInstance().getCliente().getFiles().get(selectedFileIndex).getNome();
+
+            createWebPrintJob("http://mycloudprinter.com.br/adm/"+nome,nome);
+//            if(createWebPrintJob(webview)) {
+//                ClienteEmEvidencia.getInstance().getCliente().setSaldo(novoSaldo);
+//                updateSaldoCliente(novoSaldo);
+//                txtSaldo.setText("R$ " + novoSaldo);
+//            }
 //        methodPrintTest(webview);
         }
     }
@@ -201,7 +254,6 @@ public class MainScreen extends AppCompatActivity {
 
     public void methodPrintTest(WebView webView){
 
-        new DownloadPdfAsyncTask().execute("http://maven.apache.org/maven-1.x/maven.pdf",Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS +"teste.pdf"));
 //      doPrint(webView);
 //    webView.createPrintDocumentAdapter("teste");
 
@@ -222,24 +274,48 @@ public class MainScreen extends AppCompatActivity {
 //        new DownloadPdfAsyncTask().execute("http://mycloudprinter.com.br/adm/Maven.pdf", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS+"teste.pdf"));
     }
 
-    private boolean createWebPrintJob(WebView webView) {
+    private boolean createWebPrintJob(String url, final String name) {
 
-            // Get a PrintManager instance
-            PrintManager printManager = (PrintManager) this
-                    .getSystemService(Context.PRINT_SERVICE);
+        Intent intent = getIntent();
+        Uri Download_Uri = Uri.parse(url.replace(" ","%20"));
 
-            // Get a print adapter instance
-            PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter();
-//            PrintDocumentAdapter printAdapter = new PrintJobAdapter(this);
+        new DownloadPdfAsyncTask(this, new DownloadPdfAsyncTask.DownloadPdfAsyncTaskInterface() {
+            @Override
+            public void onStart() {
 
-            // Create a print job with name and adapter instance
-            String jobName = getString(R.string.app_name) + " Document";
-            PrintJob printJob = printManager.print(jobName, printAdapter,
-                    new PrintAttributes.Builder().build());
+            }
 
-            PrintJobInfo info =  printJob.getInfo();
-            // Save the job object for later status checking
-         //   mPrintJobs.add(printJob);
+            @Override
+            public void onFinish(long id) {
+
+
+            }
+        }).execute(Download_Uri, name);
+
+        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+
+                final String jobName = MainScreen.this.getString(R.string.app_name) + " - " + name;
+                PrintJobAdapter adpater = new PrintJobAdapter(name,new PrintJobAdapter.PrintJobAdapterInterface() {
+                    @Override
+                    public void onFinish(PrintJobAdapter adapter) {
+                    }
+
+                    @Override
+                    public void cancelled() {
+
+                    }
+                });
+
+                pj = printManager.print(jobName,adpater ,null);
+            }
+        };
+        registerReceiver(receiver, filter);
+
+
         return true;
     }
 
@@ -286,5 +362,9 @@ public class MainScreen extends AppCompatActivity {
         };
         // Pass in the ViewView's document adapter.
         printManager.print("MotoGP stats", adapter, null);
+    }
+
+    public void getPrintJobInfo() {
+        Log.i("SSSP", "pj >>> " + pj.isFailed());
     }
 }

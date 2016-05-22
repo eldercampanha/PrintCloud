@@ -87,9 +87,7 @@ public class Login extends AppCompatActivity {
 
     private boolean verificaCampos() {
 
-        if(txtEmail.getText().toString() != "" && txtSenha.getText().toString() != "")
-            return true;
-        return false;
+        return txtEmail.getText().toString() != "" && txtSenha.getText().toString() != "";
     }
 
     public void showMEsssage(String msg){
