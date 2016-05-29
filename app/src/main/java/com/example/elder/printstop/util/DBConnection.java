@@ -10,43 +10,26 @@ import java.sql.SQLException;
 public class DBConnection {
     private static DBConnection ourInstance = new DBConnection();
     private static Connection connection;
-    //ANDROID EMULATOR
-    //private static String address = "10.0.2.2";
-    //GENYMOTION
-    //private static String address = "10.0.3.2";
-    //HOME
-    //private static String address = "10.0.0.104";
-    //MONITORA
-    //private static String address = "172.16.1.139";
-    //UFSCAR
-    //private static String address = "186.219.94.49";
-    //Rodolfo
 
-    private static String address = "mycloudprinter.mysql.dbaas.com.br";
+    //Rodolfo - Servidor Local
+    private static String address = "191.189.112.134";
     private static String db = "mycloudprinter";
-    private static String user = "mycloudprinter";
-    private static String password = "mycloud123";
+    private static String user = "";
+    private static String password = "";
 
+    //Servidor Online
 //    private static String address = "mycloudprinter.mysql.dbaas.com.br";
 //    private static String db = "mycloudprinter";
 //    private static String user = "mycloudprinter";
 //    private static String password = "mycloud123";
 
     public static DBConnection getInstance() throws ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
-
         if (connection == null) {
                Class.forName("com.mysql.jdbc.Driver").newInstance();
                connection = DriverManager.getConnection("jdbc:mysql://" + address + ":3306/" + db, user, password);
-           }
+        }
         return ourInstance;
     }
-
-//    private Connection getConnection( String db, String user, String password){
-//
-//        connection = DriverManager.getConnection("jdbc:mysql://" + address + ":3306/" + db, user, password);
-//        if(connection == null)
-//            connection = getConnection()
-//    }
 
     public synchronized Connection getConnection() throws ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
         return connection;
@@ -77,6 +60,5 @@ public class DBConnection {
         return 0;
     }
 
-    private DBConnection() {
-    }
+    private DBConnection() {}
 }

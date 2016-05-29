@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.print.PrintManager;
+import android.util.Log;
 
 import com.example.elder.printstop.R;
 import com.example.elder.printstop.util.Downloader;
@@ -43,10 +44,10 @@ public class DownloadPdfAsyncTask extends AsyncTask {
         DownloadManager downloadManager = (DownloadManager)mContext.getSystemService(mContext.DOWNLOAD_SERVICE);
         Uri Download_Uri = (Uri)params[0];
         String name = (String)params[1];
+        Log.i("SSS", "download - " +Download_Uri.getPath());
         DownloadManager.Request request = new DownloadManager.Request(Download_Uri);
         request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
         request.setDestinationInExternalPublicDir(Environment.getExternalStorageState(),name);
-
         mInterface.onFinish(downloadManager.enqueue(request));
 
         return null;

@@ -28,6 +28,9 @@ public class PrintJobAdapter extends PrintDocumentAdapter {
 
     private String _fileName;
     private PrintJobAdapterInterface _interface;
+    private InputStream input = null;
+    private OutputStream output = null;
+    private File path;
 
     public interface  PrintJobAdapterInterface{
         void onFinish(PrintJobAdapter adapter);
@@ -37,16 +40,16 @@ public class PrintJobAdapter extends PrintDocumentAdapter {
     public PrintJobAdapter(String fileName, PrintJobAdapterInterface printJobAdapterInterface){
         _fileName = fileName;
         _interface = printJobAdapterInterface;
+        Log.i("SSS","Construtor");
 
     }
 
     @Override
     public void onWrite(PageRange[] pages, ParcelFileDescriptor destination, CancellationSignal cancellationSignal, WriteResultCallback callback){
-        InputStream input = null;
-        OutputStream output = null;
+
 
         try {
-            File path = new File(Environment.getExternalStoragePublicDirectory(Environment.MEDIA_MOUNTED),_fileName);
+            path = new File(Environment.getExternalStoragePublicDirectory(Environment.MEDIA_MOUNTED),_fileName);
             input = new FileInputStream(path);
             output = new FileOutputStream(destination.getFileDescriptor());
 
@@ -64,6 +67,7 @@ public class PrintJobAdapter extends PrintDocumentAdapter {
                     _interface.cancelled();
                 }
             });
+            Log.i("SSS","Print Job Adapter - onWrite");
 
         } catch (FileNotFoundException ee){
             //Catch exception
@@ -84,6 +88,7 @@ public class PrintJobAdapter extends PrintDocumentAdapter {
     @Override
     public void onLayout(PrintAttributes oldAttributes, PrintAttributes newAttributes, CancellationSignal cancellationSignal, LayoutResultCallback callback, Bundle extras){
 
+
         if (cancellationSignal.isCanceled()) {
             callback.onLayoutCancelled();
             return;
@@ -92,15 +97,19 @@ public class PrintJobAdapter extends PrintDocumentAdapter {
         PrintDocumentInfo pdi = new PrintDocumentInfo.Builder(_fileName).setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT).build();
 
         callback.onLayoutFinished(pdi, true);
+        Log.i("SSS","Print Job Adapter - onLayout");
+
     }
 
     @Override
     public void onFinish() {
+        Log.i("SSS","Print Job Adapter - onFinish");
         super.onFinish();
-        Log.i("SSS","Finish printing");
-
-        _interface.onFinish(this);
     }
 
-
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Log.i("SSS","Print Job Adapter - onClone");
+        return super.clone();
+    }
 }

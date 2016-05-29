@@ -2,6 +2,7 @@ package com.example.elder.printstop.async;
 
 import android.os.AsyncTask;
 import android.speech.tts.Voice;
+import android.util.Log;
 
 import com.example.elder.printstop.model.dao.ClienteDao;
 import com.example.elder.printstop.util.DBConnection;
@@ -31,6 +32,7 @@ public class UpdateSaldoClienteAsyncTask extends AsyncTask<Object, Void, Object>
         ClienteDao clienteDao = new ClienteDao();
         int result = clienteDao.updateSaldoCliente(id, novoSaldo);
         if(result > 0){
+            Log.i("SSS", "Saldo Atualizado");
             mInterface.sucess();
         }
         else
