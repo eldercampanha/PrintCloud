@@ -7,14 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.CancellationSignal;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
-import android.print.PageRange;
-import android.print.PrintAttributes;
-import android.print.PrintDocumentAdapter;
 import android.print.PrintJob;
 import android.print.PrintManager;
 import android.support.v7.app.AppCompatActivity;
@@ -29,10 +23,14 @@ import com.example.elder.printstop.adapter.PrintJobAdapter;
 import com.example.elder.printstop.adapter.RecyclerViewAdapterMainScreen;
 import com.example.elder.printstop.async.DownloadPdfAsyncTask;
 import com.example.elder.printstop.async.UpdateSaldoClienteAsyncTask;
+import com.example.elder.printstop.async.printAsyncTask;
+import com.example.elder.printstop.model.Arquivos;
 import com.example.elder.printstop.model.Cliente;
 import com.example.elder.printstop.model.FileToPrint;
 import com.example.elder.printstop.singleton.ClienteEmEvidencia;
 import com.example.elder.printstop.util.MyWebViewClient;
+import com.mysql.management.util.Str;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -51,6 +49,9 @@ public class MainScreen extends AppCompatActivity {
     private BroadcastReceiver receiver;
     private PrintManager printManager;
     private ArrayList<Long> downloadedFilesId = new ArrayList();
+    private ArrayList<PrintJob> printJobList = new ArrayList();
+    private ArrayList downloadedFilesIndex = new ArrayList();
+    final IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
 
     @Override
     protected void onStop() {
@@ -72,6 +73,7 @@ public class MainScreen extends AppCompatActivity {
         setProgressDialog(getString(R.string.LoadingPage), getString(R.string.PleaseWait));
         setWebView();
         setRecyclerView();
+        setReceiver();
 
         //LIST ALL DOWNLOADED FILES ON DEVICE
         getAllFilesOfDir(Environment.getExternalStoragePublicDirectory(Environment.MEDIA_MOUNTED));
@@ -107,7 +109,7 @@ public class MainScreen extends AppCompatActivity {
 
     private void updateScreen() {
         txtName.setText(ClienteEmEvidencia.getInstance().getCliente().getNome());
-        txtSaldo.setText("R$ "+ ClienteEmEvidencia.getInstance().getCliente().getSaldo());
+        txtSaldo.setText(String.format("R$ %.2f", ClienteEmEvidencia.getInstance().getCliente().getSaldo()));
     }
 
     public void setRecyclerView(){
@@ -143,6 +145,8 @@ public class MainScreen extends AppCompatActivity {
         }));
     }
     public void loadWebView(String name, String cpf){
+
+        setProgressDialog(getString(R.string.LoadingPage), getString(R.string.PleaseWait));
         try {
             //Server na Casa do Rodolfo
             String url =getString(R.string.driveGooglePdfViewrURL)+
@@ -198,7 +202,7 @@ public class MainScreen extends AppCompatActivity {
                 ClienteEmEvidencia.getInstance().getCliente().getFiles().size()) {
 
             //baixar e imprimir pela casa do Rodolfo
-            createWebPrintJob("http://177.180.164.233:8080/MyCloudPrinter_New/Files_Clientes",
+            createWebPrintJob(getString(R.string.rodolfoHouseAplicationServerAddress),
                     _cliente.getCpf(),_cliente.getFiles().get(selectedFileIndex).getNome());
 
 //            //baixar e imprimir pelo servidor online
@@ -226,62 +230,119 @@ public class MainScreen extends AppCompatActivity {
 
     private boolean createWebPrintJob(String url,final String cpf, final String name) {
 
+        for(PrintJob pj : printJobList){
+            printManager.getPrintJobs().remove(pj);
+        }
+
       //CASA DO ROLDOLFO
         url = url + "/" +cpf+ "/" + name;
 
 //      //SERVIDOR ONLINE
 //        url = url + name;
-
-        Log.i("SSS", "Main Screen Link pra Download " + url);
         Uri Download_Uri = Uri.parse(url.replace(" ","%20"));
+        Log.i("SSS", "Main Screen Link pra Download " + url);
         if(pj != null )printManager.getPrintJobs().get(0).cancel();
 
 
-        new DownloadPdfAsyncTask(this, new DownloadPdfAsyncTask.DownloadPdfAsyncTaskInterface() {
-            @Override
 
-            public void onStart() {
-                setProgressDialog(getString(R.string.DownloadingFile), getString(R.string.PleaseWait));
-                progress.show();
-            }
+        if(downloadedFilesIndex.contains(selectedFileIndex)){
+            printDownloadedFile(name);
+        } else {
+            new DownloadPdfAsyncTask(this, new DownloadPdfAsyncTask.DownloadPdfAsyncTaskInterface() {
+                @Override
 
-            @Override
-            public void onFinish(long id) {
-                Log.i("SSS","donwload id - " + id);
-                MainScreen.this.downloadedFilesId.add(id);
-            }
-        }).execute(Download_Uri, name);
+                public void onStart() {
+                    setProgressDialog(getString(R.string.DownloadingFile), getString(R.string.PleaseWait));
+                    progress.show();
+                }
 
-        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+                @Override
+                public void onFinish(long id) {
+                    Log.i("SSS", "donwload id - " + id);
+                    MainScreen.this.downloadedFilesId.add(id);
+                    downloadedFilesIndex.add(selectedFileIndex);
+                }
+            }).execute(Download_Uri, name);
+        }
+
+        return true;
+    }
+
+    private void setReceiver(){
+
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-
                 progress.hide();
-                float novoSaldo = ClienteEmEvidencia.getInstance().getCliente().getSaldo();
-                novoSaldo -= ClienteEmEvidencia.getInstance().getCliente().getFiles().get(selectedFileIndex).getValor();
-                ClienteEmEvidencia.getInstance().getCliente().setSaldo(novoSaldo);
-                updateSaldoCliente(novoSaldo);
-                txtSaldo.setText("R$ " + novoSaldo);
-                final String jobName = MainScreen.this.getString(R.string.app_name) + " - " + name;
-
-                PrintJobAdapter adpater = new PrintJobAdapter(name,new PrintJobAdapter.PrintJobAdapterInterface() {
-                    @Override
-                    public void onFinish(PrintJobAdapter adapter) {
-                        Log.i("SSS", pj.getInfo().toString());
-                        removeAllAppDownloadedFiles();
-                    }
-
-                    @Override
-                    public void cancelled() {}
-                });
-
-                pj = printManager.print(jobName,adpater ,null);
+                setProgressDialog(getString(R.string.LoadingPage), getString(R.string.PleaseWait));
+                printDownloadedFile(ClienteEmEvidencia.getInstance().getCliente().getFiles().get(selectedFileIndex).getNome());
             }
         };
         registerReceiver(receiver, filter);
+    }
+    private void atualizarSaldo(int numberOfPages){
 
-        return true;
+        float novoSaldo = ClienteEmEvidencia.getInstance().getCliente().getSaldo();
+
+        Arquivos file = ClienteEmEvidencia.getInstance().getCliente().getFiles().get(selectedFileIndex);
+
+        float preco = (file.getValor() / Float.valueOf(String.valueOf(file.getQuantidadedePaginas())));
+
+        if(numberOfPages == -1)
+            novoSaldo -= file.getValor();
+        else
+            novoSaldo -= preco * numberOfPages;
+
+                ClienteEmEvidencia.getInstance().getCliente().setSaldo(novoSaldo);
+                updateSaldoCliente(novoSaldo);
+                updateScreen();
+                pj.cancel();
+//                txtSaldo.setText(String.format("R$ %.2f" + novoSaldo));
+    }
+    private void printDownloadedFile(String name) {
+
+        final String jobName = MainScreen.this.getString(R.string.app_name) + " - " + name;
+        setProgressDialog("Printing..",null);
+        PrintJobAdapter adpater = new PrintJobAdapter(name,new PrintJobAdapter.PrintJobAdapterInterface() {
+            @Override
+            public void onFinish(PrintJobAdapter adapter, float valor1) {
+                Log.i("SSS","Print Job Adapter - onFinish on Main screen - "+ pj.getInfo());
+
+                new printAsyncTask(new printAsyncTask.printAsyncTaskInterface() {
+                    @Override
+                    public void onStart() {
+                        progress.show();
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        progress.hide();
+                    }
+
+                    @Override
+                    public void onSuccess(final int numberOfPages) {
+                        Log.i("SSS", "atualizar saldo  ");
+
+                        MainScreen.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                atualizarSaldo(numberOfPages);
+                                progress.hide();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFail() {
+
+                    }
+                }).execute(pj);
+            }
+
+            @Override
+            public void cancelled() {}
+        });
+        pj = printManager.print(jobName,adpater ,null);
     }
 
     public void removeAllAppDownloadedFiles(){
@@ -289,6 +350,7 @@ public class MainScreen extends AppCompatActivity {
             ((DownloadManager)this.getSystemService(this.DOWNLOAD_SERVICE)).remove(id);
         }
     }
+
 
     public void btnLogoutClicked(View view){
         removeAllAppDownloadedFiles();

@@ -31,17 +31,19 @@ public class PrintJobAdapter extends PrintDocumentAdapter {
     private InputStream input = null;
     private OutputStream output = null;
     private File path;
+    private float valor;
+    private int numberOfPages;
 
     public interface  PrintJobAdapterInterface{
-        void onFinish(PrintJobAdapter adapter);
+        void onFinish(PrintJobAdapter adapter, float valor);
         void cancelled();
     }
+
 
     public PrintJobAdapter(String fileName, PrintJobAdapterInterface printJobAdapterInterface){
         _fileName = fileName;
         _interface = printJobAdapterInterface;
         Log.i("SSS","Construtor");
-
     }
 
     @Override
@@ -60,7 +62,6 @@ public class PrintJobAdapter extends PrintDocumentAdapter {
                 output.write(buf, 0, bytesRead);
             }
 
-            callback.onWriteFinished(new PageRange[]{PageRange.ALL_PAGES});
             cancellationSignal.setOnCancelListener(new CancellationSignal.OnCancelListener() {
                 @Override
                 public void onCancel() {
@@ -68,10 +69,13 @@ public class PrintJobAdapter extends PrintDocumentAdapter {
                 }
             });
             Log.i("SSS","Print Job Adapter - onWrite");
+            callback.onWriteFinished(new PageRange[]{PageRange.ALL_PAGES});
 
         } catch (FileNotFoundException ee){
+            Log.i("SSS","Print Job Adapter - fail");
             //Catch exception
         } catch (Exception e) {
+            Log.i("SSS","Print Job Adapter - fail");
             //Catch exception
         } finally {
             try {
@@ -91,25 +95,21 @@ public class PrintJobAdapter extends PrintDocumentAdapter {
 
         if (cancellationSignal.isCanceled()) {
             callback.onLayoutCancelled();
+            Log.i("SSS","Print Job Adapter - cancel");
             return;
         }
 
         PrintDocumentInfo pdi = new PrintDocumentInfo.Builder(_fileName).setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT).build();
 
         callback.onLayoutFinished(pdi, true);
-        Log.i("SSS","Print Job Adapter - onLayout");
-
     }
 
     @Override
     public void onFinish() {
         Log.i("SSS","Print Job Adapter - onFinish");
+        _interface.onFinish(this, valor);
         super.onFinish();
     }
 
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        Log.i("SSS","Print Job Adapter - onClone");
-        return super.clone();
-    }
+
 }

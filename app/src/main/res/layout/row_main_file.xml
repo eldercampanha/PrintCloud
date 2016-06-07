@@ -3,19 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
-    android:padding="5dp">
+    android:padding="15dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="11">
-
-        <CheckBox
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginRight="10dp"/>
+        android:background="#FFF"
+        android:weightSum="9">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -48,15 +43,15 @@
 
         </LinearLayout>
 
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="0dp"
-            android:background= "@null"
-            android:id="@+id/remove"
-            android:src="@android:drawable/ic_delete" />
+        <!--<ImageButton-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:gravity="right"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginRight="0dp"-->
+            <!--android:background= "@null"-->
+            <!--android:id="@+id/remove"-->
+            <!--android:src="@android:drawable/ic_delete" />-->
 
 
     </LinearLayout>
