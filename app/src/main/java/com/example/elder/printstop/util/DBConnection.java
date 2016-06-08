@@ -12,7 +12,7 @@ public class DBConnection {
     private static Connection connection;
 
     //Rodolfo - Servidor Local
-    private static String address = "186.223.222.213";
+    private static String address = "177.180.110.27";
     private static String db = "mycloudprinter";
     private static String user = "admin";
     private static String password = "admin";

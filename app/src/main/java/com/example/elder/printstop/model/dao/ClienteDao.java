@@ -83,7 +83,8 @@ public class ClienteDao {
                 ", telefone = '" + cliente.getTelefone() + "' " +
                 ", email = '" + cliente.getEmail() + "' " +
                 " WHERE idpessoa = " + cliente.getId();
-        DBConnection.closeConnection();
+
+              DBConnection.closeConnection();
 
         try {
             int result = DBConnection.getInstance().executeUpdate(sql);
