@@ -4,7 +4,7 @@
     <string name="password">Password</string>
     <string name="log_in">Log In</string>
     <string name="login_screen_title">Welcome to Fast Print</string>
-    <string name="fast_print">Fast Print</string>
+    <string name="fast_print">My Cloud Printer</string>
     <string name="login_instructions">Enter your name and password to access the system</string>
     <string name="main_screen_files_title">Your Files</string>
     <string name="add_files">ADD FILES</string>
@@ -23,7 +23,7 @@
     <string name="LoadingPage">Loading Page..</string>
     <string name="PleaseWait">Please Wait</string>
     <string name="DownloadBaseUrl"></string>
-    <string name="rodolfoHouseAplicationServerAddress">http://177.180.110.27:8080/MyCloudPrinter/Files_Clientes/</string>
+    <string name="rodolfoHouseAplicationServerAddress">http://177.180.161.140:8080/MyCloudPrinter/Files_Clientes/</string>
     <string name="serverOnlineAplicationServerAddress">http://mycloudprinter.com.br/adm/</string>
     <string name="driveGooglePdfViewrURL">https://drive.google.com/viewerng/viewer?embedded=true&amp;url=</string>
 </resources>
